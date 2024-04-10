@@ -30,11 +30,11 @@
 
         .slots {
             position: relative;
-            width: 237px; /* 3.5 * $icon_width */
-            height: 237px; /* 3 * $icon_height */
+            width: 237px; 
+            height: 237px; 
             display: flex;
             justify-content: space-between;
-            padding: 23.7px; /* 0.3 * $icon_width */
+            padding: 23.7px; 
             background: linear-gradient(45deg, grey 0%, lightgray 100%);
             border-top: 1px solid rgba(255, 255, 255, 0.6);
             border-right: 1px solid rgba(255, 255, 255, 0.6);
@@ -96,8 +96,8 @@
 
         .reel {
             position: relative;
-            width: 79px; /* $icon_width */
-            height: 237px; /* 3 * $icon_height */
+            width: 79px;
+            height: 237px;
             border: 1px solid rgba(0, 0, 0, 0.3);
             border-radius: 3px;
             overflow: hidden;
@@ -150,7 +150,7 @@
             background-color: #45a049;
         }
 
-        /* Style for the dialog */
+     
         #dialogBox {
             display: none;
             position: fixed;
@@ -197,12 +197,11 @@
 
     <button id="startButton">Start Slots</button>
 
-    <!-- Added a div to display the total amount -->
+  
     <h1 id="caption" style="position: absolute; top: 30px; left: 105px; transform: translateX(-50%); font-size: 16px; color: #444;">How much money you owe me:</h1>
 
     <div id="amountBox" style="position: absolute; top: 70px; left: 50px; font-size: 24px;">$0</div>
 
-    <!-- Dialog box for continue option -->
     <div id="dialogBox">
         <h2>Would you like to continue?</h2>
         <button id="yesButton">Yes</button>
@@ -218,18 +217,17 @@
             time_per_icon = 100,
             indexes = [0, 0, 0];
 
-        let totalAmount = 0; // Variable to store the total amount
-        let animationInProgress = false; // Variable to track if animation is in progress
+        let totalAmount = 0;
+        let animationInProgress = false;
 
         const roll = (reel, offset = 0) => {
-            // Minimum of 2 + the reel offset rounds
+            
             const delta = (offset + 2) * num_icons + Math.round(Math.random() * num_icons); 
             
-            // Return promise so we can wait for all reels to finish
+            
             return new Promise((resolve, reject) => {
                 
                 const style = getComputedStyle(reel),
-                            // Current background position
                             backgroundPositionY = parseFloat(style["background-position-y"]),
                             // Target background position
                             targetBackgroundPositionY = backgroundPositionY + delta * icon_height,
@@ -256,12 +254,8 @@
             });
         };
 
-        /**
-         * Roll all reels, when promise resolves roll again
-         */
         function rollAll() {
             
-            // Check if animation is already in progress
             if (animationInProgress) {
                 return;
             }
@@ -270,52 +264,37 @@
             
             const reelsList = document.querySelectorAll('.slots > .reel');
 
-            // Disable the start button
             document.getElementById('startButton').disabled = true;
-            animationInProgress = true; // Set animation in progress
+            animationInProgress = true;
             
             Promise
-                
-                // Activate each reel, must convert NodeList to Array for this with spread operator
                 .all( [...reelsList].map((reel, i) => roll(reel, i)) )  
-                
-                // When all reels done animating (all promises solve)
                 .then((deltas) => {
-                    // add up indexes
                     deltas.forEach((delta, i) => indexes[i] = (indexes[i] + delta)%num_icons);
                     debugEl.textContent = indexes.map((i) => iconMap[i]).join(' - ');
                 
-                    // Win conditions
                     if (indexes[0] == indexes[1] || indexes[1] == indexes[2]) {
                         const winCls = indexes[0] == indexes[2] ? "win2" : "win1";
                         document.querySelector(".slots").classList.add(winCls);
                         setTimeout(() => document.querySelector(".slots").classList.remove(winCls), 2000)
                     } else {
-                        // If no win, show the dialog box
                         document.getElementById('dialogBox').style.display = 'block';
                     }
                 
-                    // Update the total amount and display it
                     totalAmount += 100;
                     document.getElementById('amountBox').textContent = `$${totalAmount}`;
                 
-                    // Enable the start button
                     document.getElementById('startButton').disabled = false;
-                    animationInProgress = false; // Reset animation in progress
+                    animationInProgress = false;
                     
                 });
         };
 
-        // Kickoff
-        // setTimeout(rollAll, 1000); 
-
         const startButton = document.getElementById('startButton');
         startButton.addEventListener('click', () => {
-            // Start the slot animation
             rollAll();
         });
 
-        // Event listeners for the dialog buttons
         document.getElementById('yesButton').addEventListener('click', () => {
             document.getElementById('dialogBox').style.display = 'none';
             rollAll();
@@ -323,9 +302,10 @@
 
         document.getElementById('noButton').addEventListener('click', () => {
             document.getElementById('dialogBox').style.display = 'none';
-            totalAmount = 0; // Reset total amount to 0
-            document.getElementById('amountBox').textContent = '$0'; // Update the display
+            totalAmount = 0;
+            document.getElementById('amountBox').textContent = '$0';
         });
     </script>
 </body>
 </html>
+
